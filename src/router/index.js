@@ -10,7 +10,7 @@ export default new Router({
   routes: [
     {
       path: "/",
-      redirect: "/news",
+      redirect: "/records",
       name: "主页"
     },
     {
