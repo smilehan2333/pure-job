@@ -185,7 +185,7 @@ export default {
     // 删除
     handleDelete(uuid) {
       axios
-        .post("http://81.68.132.87:3011/jobinfos/delete_jobinfo", {
+        .post(`${this.API.JOBINFO}/delete_jobinfo`, {
           uuid: uuid
         })
         .then(() => {
@@ -211,7 +211,7 @@ export default {
     },
     confirmEdit(newInfo) {
       axios
-        .post("http://81.68.132.87:3011/jobinfos/edit_jobinfo", {
+        .post(`${this.API.JOBINFO}/edit_jobinfo`, {
           newInfo: newInfo
         })
         .then(() => {
@@ -238,7 +238,7 @@ export default {
     // 添加
     confirmAdd(newInfo) {
       axios
-        .post("http://81.68.132.87:3011/jobinfos/add_jobinfo", {
+        .post(`${this.API.JOBINFO}/add_jobinfo`, {
           newInfo: newInfo
         })
         .then(() => {
@@ -255,7 +255,7 @@ export default {
     // 获取服务器记录
     refreshJobinfos() {
       const that = this;
-      axios.get("http://81.68.132.87:3011/jobinfos/get_jobinfos").then(res => {
+      axios.get(`${this.API.JOBINFO}/get_jobinfos`).then(res => {
         that.lists = res.data;
       });
     }
