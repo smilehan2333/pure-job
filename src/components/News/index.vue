@@ -2,7 +2,7 @@
   <div>
     <div class="news-container">
       <template>
-        <el-table :data="lists" style="width: 100%" stripe>
+        <el-table :data="sortLists" style="width: 100%" stripe>
           <el-table-column type="index" width="50"> </el-table-column>
 
           <!-- 展开部分 -->
@@ -25,6 +25,11 @@
                 target="_blank"
                 >{{ scope_company.row.theme }}</a
               >
+            </template>
+          </el-table-column>
+          <el-table-column prop="position" label="地点">
+            <template v-slot:default="scope">
+              {{ scope.row.position ? scope.row.position : "" }}
             </template>
           </el-table-column>
 
@@ -77,11 +82,21 @@
     <div class="sider">
       <!-- 添加按钮 -->
       <div
-        class="side-button side-btn2"
+        class="side-button side-btn1"
         @click="isAdding = true"
         title="与大家一起分享招聘信息吧 !"
       >
         添加
+      </div>
+      <!-- 测试按钮 -->
+      <!-- <div class="side-button side-btn1" @click="test">
+        测试
+      </div> -->
+      <div style="text-align:center">
+        <span style="color:grey;font-size:10px;">常用链接</span>
+      </div>
+      <div class="side-button side-btn2" v-for="item in outerLinks">
+        <a :href="item.link" target="_blank">{{ item.title }}</a>
       </div>
     </div>
 
@@ -110,9 +125,24 @@ export default {
       isAdding: false,
       isEditing: false,
       oldJobinfo: null,
+      outerLinks: [
+        {
+          title: "牛客网",
+          href: "https://www.nowcoder.com/jobs/recommend/campus"
+        },
+        {
+          title: "交大招聘",
+          href: "https://jiuye.swjtu.edu.cn/eweb/jygl/zpfw.so"
+        },
+        {
+          title: "国资央企",
+          href: "https://cujiuye.iguopin.com/?v=3.1.1&inviteCode=55zY4"
+        }
+      ],
       lists: [
         {
           theme: "字节跳动2023校园招聘研发提前批启动，2000+研发Offer等你来！",
+          position: "",
           link: "http://www.baidu.com",
           remark: "说明222",
           createAtTime: "2022-07-11"
@@ -124,10 +154,25 @@ export default {
     dialogTitle() {
       if (this.isAdding) return "添加信息";
       if (this.isEditing) return "修改信息";
+    },
+    sortLists() {
+      const newList = JSON.parse(JSON.stringify(this.lists));
+      newList.reverse();
+      return newList;
     }
   },
 
   methods: {
+    test() {
+      // 如果本地没有这个属性，并且输入框输入了值
+      if (!localStorage.hasOwnProperty("whoru") && true) {
+        localStorage.setItem("whoru", "smilehanhanhan");
+      } else {
+        const user = localStorage.getItem("whoru");
+        console.log(user);
+      }
+    },
+    // 日期格式化
     formatDate(dateString) {
       return formatDate(dateString);
     },
@@ -139,13 +184,24 @@ export default {
     },
     // 删除
     handleDelete(uuid) {
-      console.log(uuid);
       axios
         .post("http://81.68.132.87:3011/jobinfos/delete_jobinfo", {
           uuid: uuid
         })
         .then(() => {
-          this.refreshJobinfos(); //刷新服务器数据
+          // this.refreshJobinfos(); //刷新服务器数据。删除之后不向服务器请求数据，直接操作本地数据即可
+          for (let i = 0; i < this.lists.length; i++) {
+            if (this.lists[i].uuid === uuid) {
+              this.lists.splice(i, 1);
+              break;
+            }
+          }
+
+          this.$message({
+            type: "success",
+            duration: 500,
+            message: "删除成功!"
+          });
         });
     },
     // 修改
@@ -154,26 +210,46 @@ export default {
       this.isEditing = true;
     },
     confirmEdit(newInfo) {
-      console.log(newInfo);
       axios
         .post("http://81.68.132.87:3011/jobinfos/edit_jobinfo", {
           newInfo: newInfo
         })
         .then(() => {
+          // this.refreshJobinfos(); //刷新服务器数据。修改之后也不用重新请求服务器，直接修改本地即可
+          for (let i = 0; i < this.lists.length; i++) {
+            if (this.lists[i].uuid === newInfo.uuid) {
+              // this.lists[i] = JSON.parse(JSON.stringify(newInfo));//这样不行，视图不会立即更新
+              this.$set(this.lists[i], "theme", newInfo.theme);
+              this.$set(this.lists[i], "position", newInfo.position);
+              this.$set(this.lists[i], "link", newInfo.link);
+              this.$set(this.lists[i], "remark", newInfo.remark);
+              break;
+            }
+          }
           this.cancelHandle();
-          this.refreshJobinfos(); //刷新服务器数据
+
+          this.$message({
+            type: "success",
+            duration: 500,
+            message: "修改成功!"
+          });
         });
     },
     // 添加
     confirmAdd(newInfo) {
-      console.log(newInfo);
       axios
         .post("http://81.68.132.87:3011/jobinfos/add_jobinfo", {
           newInfo: newInfo
         })
         .then(() => {
           this.cancelHandle();
-          this.refreshJobinfos(); //刷新服务器数据
+          this.refreshJobinfos(); //刷新服务器数据。添加操作需要在后台生成uuid，所以必须重新请求
+
+          this.$message({
+            type: "success",
+            duration: 500,
+            message: "添加成功!"
+          });
         });
     },
     // 获取服务器记录
@@ -189,7 +265,7 @@ export default {
 <style scoped>
 .news-container {
   /* background: orange; */
-  width: 70%;
+  width: 88%;
   margin: 0 auto;
   padding-top: 20px;
 }
@@ -198,19 +274,20 @@ ul,
 li {
   text-decoration: none;
   list-style-type: none;
+  color: rgb(64, 158, 255);
 }
 
 .sider {
   position: fixed;
-  right: 30px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
 }
 .side-button {
-  height: 40px;
-  width: 40px;
+  height: 36px;
+  width: 36px;
   border-radius: 50%;
   margin-top: 10px;
 
@@ -218,8 +295,8 @@ li {
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
   text-align: center;
   color: white;
-  font: 700 18px "宋体";
-  line-height: 40px;
+  font: 700 16px "宋体";
+  line-height: 36px;
   padding: 12px;
 
   transition: all 0.5s;
@@ -234,7 +311,17 @@ li {
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
   transform: scale(1.2);
 }
-.side-btn2 {
+.side-btn1 {
   background-color: rgb(64, 158, 255);
+
+  margin-bottom: 50px;
+}
+.side-btn2 {
+  /* background-color: rgb(64, 158, 255); */
+
+  border-radius: 5px;
+  font: 700 16px "宋体";
+  line-height: 20px;
+  padding: 10px;
 }
 </style>

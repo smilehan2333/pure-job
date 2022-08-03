@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    top="3vh"
+    top="1vh"
     title="添加投递记录"
     style="text-align:center;font:700 25px Helvetica Neue, Helvetica, PingFang SC,Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;"
     :destroy-on-close="true"
@@ -154,7 +154,6 @@ export default {
           });
         })
         .catch(err => {
-          console.log(err);
           this.$message({
             type: "info",
             message: "取消添加！"

@@ -119,19 +119,21 @@
       >
         添加
       </div>
-      <!-- 重置按钮 -->
-      <!-- <div class="side-button side-btn3">
-        <router-link :to="{ path: '/sugar/collections' }" style="color:white"
-          >跳转</router-link
-        >
-      </div> -->
       <!-- 导出按钮 -->
       <div
-        class="side-button side-btn4"
+        class="side-button side-btn3"
         @click="saveFile"
         title="导出个人记录到本地"
       >
         导出
+      </div>
+      <!-- 导出按钮 -->
+      <div
+        class="side-button side-btn4"
+        @click="handleImportRecords"
+        title="导入本地记录"
+      >
+        导入
       </div>
       <!-- 返回底部 -->
       <div class="side-button side-btn5" @click="backBottom" title="回到底部">
@@ -141,6 +143,28 @@
         ></i>
       </div>
     </div>
+    <!-- 导入功能弹窗 -->
+    <el-dialog
+      v-if="showImportRecordsDialog"
+      top="15vh"
+      title="上传记录"
+      style="text-align:center;font:700 25px Helvetica Neue, Helvetica, PingFang SC,Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;"
+      :destroy-on-close="true"
+      :visible="true"
+      width="52%"
+      :before-close="cancelImport"
+    >
+      <el-input
+        type="textarea"
+        rows="15"
+        placeholder="将导出的txt文本内容复制到这里~~~"
+        v-model="importInfo"
+      ></el-input>
+      <div style="margin-top:20px">
+        <el-button @click="cancelImport">取消</el-button>
+        <el-button type="primary" @click="confirmImport">确认</el-button>
+      </div>
+    </el-dialog>
 
     <!-- 功能按钮 -->
     <template>
@@ -174,9 +198,10 @@ export default {
     }
   },
   mounted() {
-    setTimeout(() => {
-      this.backBottom(); //滚动到底部
-    }, 600);
+    // 先不滚动，有bug：从个人记录快速切换到招聘信息页面时，可能会直接滚动到底部
+    // setTimeout(() => {
+    //   this.backBottom(); //滚动到底部
+    // }, 600);
   },
   data() {
     return {
@@ -185,7 +210,9 @@ export default {
       isEditing: false,
       nowRow: null, //编辑选中行
       oldJobnote: {}, //向子组件传值
-      tableData: []
+      tableData: [],
+      importInfo: "",
+      showImportRecordsDialog: false
     };
   },
 
@@ -263,6 +290,41 @@ export default {
     //返回底部
     backBottom() {
       $("body,html").animate({ scrollTop: document.body.scrollHeight }, 500);
+    },
+
+    // 导入记录
+    handleImportRecords() {
+      this.showImportRecordsDialog = true;
+    },
+    cancelImport() {
+      this.importInfo = "";
+      this.showImportRecordsDialog = false;
+    },
+    confirmImport() {
+      this.$confirm("本操作会覆盖当前记录，确认上传吗?", "提示", {
+        confirmButtonText: "确定上传",
+        cancelButtonText: "我再想想",
+        type: "warning"
+      })
+        .then(() => {
+          const arr = this.importInfo
+            .split("\n*********************************\n")
+            .map(item => JSON.parse(item));
+
+          if (arr[0].hasOwnProperty("company")) {
+            this.tableData = arr;
+          } else {
+            alert("导入格式错误!!!");
+          }
+
+          this.importInfo = "";
+          this.showImportRecordsDialog = false;
+        })
+        .catch(() => {
+          alert("导入格式错误!!!");
+          this.importInfo = "";
+          this.showImportRecordsDialog = false;
+        });
     },
 
     //保存文件
@@ -361,11 +423,16 @@ a {
 }
 .side-btn2 {
   background-color: rgb(64, 158, 255);
+
+  /* width: 66px;
+  height: 66px; */
 }
 .side-btn3 {
-  background-color: rgb(245, 108, 108);
+  /* background-color: rgb(230, 162, 60); */
+  background-color: grey;
 }
 .side-btn4 {
-  background-color: rgb(230, 162, 60);
+  /* background-color: rgb(245, 108, 108); */
+  background-color: grey;
 }
 </style>

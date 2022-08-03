@@ -27,7 +27,7 @@ export default {
   name: "Header",
   data() {
     return {
-      activeIndex: "/records"
+      activeIndex: "/news"
     };
   },
   methods: {
