@@ -2,7 +2,12 @@
   <div>
     <div class="news-container">
       <template>
-        <el-table :data="sortLists" style="width: 100%" stripe>
+        <el-table
+          :data="sortLists"
+          style="width: 100%"
+          v-loading="isLoading"
+          stripe
+        >
           <el-table-column type="index" width="50"> </el-table-column>
 
           <!-- 展开部分 -->
@@ -122,6 +127,7 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       isAdding: false,
       isEditing: false,
       oldJobinfo: null,
@@ -140,13 +146,13 @@ export default {
         }
       ],
       lists: [
-        {
-          theme: "字节跳动2023校园招聘研发提前批启动，2000+研发Offer等你来！",
-          position: "",
-          link: "http://www.baidu.com",
-          remark: "说明222",
-          createAtTime: "2022-07-11"
-        }
+        // {
+        //   theme: "字节跳动2023校园招聘研发提前批启动，2000+研发Offer等你来！",
+        //   position: "成都",
+        //   link: "http://www.baidu.com",
+        //   remark: "说明222",
+        //   createAtTime: "2022-07-11"
+        // }
       ]
     };
   },
@@ -257,6 +263,7 @@ export default {
       const that = this;
       axios.get(`${this.API.JOBINFO}/get_jobinfos`).then(res => {
         that.lists = res.data;
+        this.isLoading = false; //加载动画消失
       });
     }
   }
