@@ -1,12 +1,19 @@
 <template>
   <div>
-    <div style="text-align:center;padding:0px;">
-      <span style="color:grey;font-size:10px;"
-        >请在登录后尽情添加，可以顺便把看到的地点信息添加上~~~</span
-      >
-    </div>
     <div class="news-container">
       <template>
+        <!-- 分页功能 -->
+        <el-pagination
+          background
+          style="text-align:right;margin:0 -10px 10px 0;"
+          layout="prev, pager, next"
+          :page-size="pageSize"
+          :total="lists.length"
+          @prev-click="prevClick"
+          @next-click="nextClick"
+          @current-change="currentChange"
+        >
+        </el-pagination>
         <!-- 表格 -->
         <el-table
           :data="sortLists"
@@ -141,6 +148,8 @@ export default {
       isAdding: false,
       isEditing: false,
       oldJobinfo: null,
+      pageSize: 10,
+      currentPage: 1,
       outerLinks: [
         {
           title: "牛客网",
@@ -185,13 +194,28 @@ export default {
       if (this.isEditing) return "修改信息";
     },
     sortLists() {
-      const newList = JSON.parse(JSON.stringify(this.lists));
-      return newList.reverse();
+      const tempList = JSON.parse(JSON.stringify(this.lists));
+      // 计算分页后，每一页显示项目的起止序号
+      const startIndex = (this.currentPage - 1) * this.pageSize;
+      const endIndex = startIndex + this.pageSize;
+      const currentPageLists = tempList.reverse().slice(startIndex, endIndex);
+      const newList = JSON.parse(JSON.stringify(currentPageLists));
+      return newList;
     }
   },
   methods: {
     ...mapMutations({ setAuthor: "setAuthor" }),
 
+    // 分页功能
+    currentChange(currentPage) {
+      this.currentPage = currentPage;
+    },
+    nextClick(currentPage) {
+      this.currentPage = currentPage;
+    },
+    prevClick(currentPage) {
+      this.currentPage = currentPage;
+    },
     // 添加用户接口
     test() {
       const authorLists = [

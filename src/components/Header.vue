@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="position:relative">
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
@@ -20,19 +20,68 @@
         >招聘信息</el-menu-item
       >
     </el-menu>
+
+    <!-- 登录按钮 -->
+    <div class="login">
+      <el-button type="primary" circle @click="handleLogin">
+        <!-- 未登录显示图标 -->
+        <template v-if="stateOfLogin === 'offline'"
+          ><i :class="icon[0]"></i
+        ></template>
+        <!-- 已登录显示名 -->
+        <template v-else>
+          <span>{{ avator }}</span>
+        </template>
+      </el-button>
+    </div>
+    <!-- 登录组件 -->
+    <Login v-if="isLogining" @cancelLogin="cancelLogin" />
   </div>
 </template>
 <script>
+import Login from "./Login.vue";
+import { mapGetters } from "vuex";
+
 export default {
   name: "Header",
+  components: { Login },
   data() {
     return {
-      activeIndex: "/news"
+      activeIndex: "/news",
+      icon: ["el-icon-user-solid", "el-icon-user"],
+      stateOfLogin: "offline",
+      avator: "",
+      isLogining: false
     };
   },
+  mounted() {
+    setTimeout(() => {
+      this.validateLoginState();
+    }, 500);
+  },
+  computed: {
+    ...mapGetters(["Author"])
+  },
   methods: {
+    //导航栏跳转
     handleSelect(key, keyPath) {
       this.$router.push(key).catch(err => {});
+    },
+    // 用户登录
+    handleLogin() {
+      this.isLogining = true;
+    },
+    cancelLogin() {
+      this.isLogining = false;
+
+      this.validateLoginState();
+    },
+    validateLoginState() {
+      if (this.Author) {
+        this.stateOfLogin = "online";
+        const arr = this.Author.split("");
+        this.avator = arr[arr.length - 1];
+      } else this.stateOfLogin = "offline";
     }
   }
 };
@@ -41,5 +90,14 @@ export default {
 .el-menu-item {
   font-size: 20px;
   width: 15%;
+}
+.login {
+  position: absolute;
+  padding: 5px;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  text-align: center;
 }
 </style>

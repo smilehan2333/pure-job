@@ -84,11 +84,10 @@ export default {
         ],
         position: [
           {
-            required: true,
-            message: "请输入工作地点(20字以内)~~~",
+            required: false,
             trigger: "blur"
           },
-          { min: 0, max: 20 }
+          { min: 0, max: 99 }
         ],
         link: [
           {
@@ -101,10 +100,10 @@ export default {
         remark: [
           {
             required: false,
-            message: "请输入描述(500字以内)~~~",
+            message: "请输入描述(1000字以内)~~~",
             trigger: "blur"
           },
-          { min: 0, max: 500 }
+          { min: 0, max: 999 }
         ]
       },
       newInfo: {

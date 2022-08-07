@@ -5,27 +5,29 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    counts: 9527,
-    lists: [0, 1, 2, 3, 4, 5]
+    whoru: ""
   },
   getters: {
-    countsCanBeUsed(state) {
-      return state.counts - 9000;
+    Author(state) {
+      return state.whoru;
+    }
+  },
+  mutations: {
+    setAuthor(state, author) {
+      state.whoru = author;
+    },
+    resetAuthor(state) {
+      state.whoru = "";
     }
   },
   actions: {
-    addCounts() {
-      this.state.counts++;
-    },
-    minusCounts() {
-      this.state.counts--;
-    },
-    addToLists() {
-      const m = this.state.lists.length;
-      this.state.lists.push(m);
-    },
-    minusFromLists() {
-      this.state.lists.pop();
+    // 传入的参数从第二位开始
+    func1({ commit, state }, para) {
+      if (state.whoru) {
+        commit("setAuthor", { desc: "执行mutations中的方法" });
+      } else {
+        commit("resetAuthor", { desc: "执行mutations中的方法" });
+      }
     }
   }
 });
