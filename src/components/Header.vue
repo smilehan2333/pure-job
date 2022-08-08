@@ -5,12 +5,11 @@
       class="el-menu-demo"
       mode="horizontal"
       @select="handleSelect"
-      background-color="#545c64"
+      background-color="#2274A5"
       text-color="#fff"
-      active-text-color="#ffd04b"
-      style="display:flex;flex-direction:row;justify-content: center;text-align:center"
+      active-text-color="#F1C40F"
+      style="display:flex;flex-direction:row;justify-content: center;text-align:center;"
     >
-      <!-- <el-menu-item index="/home">首页</el-menu-item> -->
       <el-menu-item index="/records" title="个人记录将会保存在本地"
         >个人记录</el-menu-item
       >

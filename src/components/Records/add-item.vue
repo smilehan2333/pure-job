@@ -7,6 +7,7 @@
     :visible="true"
     width="52%"
     :before-close="cancelAdd"
+    :close-on-click-modal="false"
   >
     <el-form top="5vh" label-width="80px" ref="newCompany" :model="newCompany">
       <el-form-item label="公司名称">
@@ -150,7 +151,8 @@ export default {
           //弹出提示
           this.$message({
             type: "success",
-            message: "添加成功!"
+            message: "添加成功!",
+            duration: 800
           });
         })
         .catch(err => {
@@ -167,9 +169,11 @@ export default {
         confirmButtonText: "考虑好了",
         cancelButtonText: "我再想想",
         type: "warning"
-      }).then(() => {
-        this.$emit("cancel-add");
-      });
+      })
+        .then(() => {
+          this.$emit("cancel-add");
+        })
+        .catch(() => {});
     }
   }
 };

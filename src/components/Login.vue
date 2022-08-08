@@ -4,6 +4,7 @@
     :visible="true"
     width="30%"
     :before-close="cancelLogin"
+    :close-on-click-modal="false"
   >
     <!-- 登录页面 -->
     <template v-if="!hasLogin">
@@ -66,10 +67,11 @@
         >
 
         <div class="tips" style="color:rgb(64,158,255,0.5)">
-          <div style="margin-right:20px;">
-            username: 张三 or your chinese name
-          </div>
-          <div>password: default 123456</div>
+          <p style="margin-right:20px;">
+            用户名：你的中文名或张三（请尽量别用张三）
+          </p>
+          <p>默认密码: 123456</p>
+          <div></div>
         </div>
       </el-form>
     </template>
@@ -192,7 +194,7 @@ export default {
             this.cancelLogin();
 
             this.$message({
-              message: "登录成功!",
+              message: `${userInfo.username}你好，登录成功!`,
               type: "success"
             });
           }
@@ -211,6 +213,10 @@ export default {
     },
     //修改密码
     handleUpdatePwd() {
+      if (this.Author === "张三") {
+        this.$message("用户张三是公用的，不能修改密码！！！");
+        return;
+      }
       this.isUpdatingPwd = true;
     },
     confirmUpdatePwd() {

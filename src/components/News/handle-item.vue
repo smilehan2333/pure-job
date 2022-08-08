@@ -7,6 +7,7 @@
     :visible="true"
     width="52%"
     :before-close="cancelHandle"
+    :close-on-click-modal="false"
   >
     <el-form
       top="5vh"

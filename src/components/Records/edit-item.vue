@@ -7,6 +7,7 @@
     :destroy-on-close="true"
     :visible="true"
     :before-close="cancelEdit"
+    :close-on-click-modal="false"
   >
     <el-form top="5vh" ref="newJobnote" :model="newJobnote" label-width="80px">
       <el-form-item label="公司名称">
@@ -143,12 +144,7 @@ export default {
             message: "修改成功!"
           });
         })
-        .catch(err => {
-          this.$message({
-            type: "info",
-            message: "修改已取消！"
-          });
-        });
+        .catch(err => {});
     },
 
     //取消修改
@@ -157,9 +153,11 @@ export default {
         confirmButtonText: "考虑好了",
         cancelButtonText: "我再想想",
         type: "warning"
-      }).then(() => {
-        this.$emit("cancel-edit");
-      });
+      })
+        .then(() => {
+          this.$emit("cancel-edit");
+        })
+        .catch(() => {});
     }
   }
 };

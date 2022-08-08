@@ -1,10 +1,51 @@
 <template>
   <div>
-    <div style="text-align:center;padding:0px;">
+    <!-- 提示+搜索行 -->
+    <div class="search-row">
       <span style="color:grey;font-size:10px;"
-        >请在登录后尽情添加，可以顺便把看到的地点信息添加上~~~</span
+        >请在登录后尽情添加修改，可以顺便把看到的地点信息完善一下~~~</span
       >
+      <div>
+        <el-select
+          v-model="search_index"
+          :placeholder="search_cases[search_index]"
+          style="width:110px;"
+        >
+          <el-option
+            v-for="(item, index) in search_cases"
+            :key="item"
+            :label="item"
+            :value="index"
+          >
+          </el-option>
+        </el-select>
+        <!-- <el-dropdown trigger="hover">
+          <span class="el-dropdown-link">
+            {{ search_case }}<i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-for="(item, index) in search_cases"
+              :key="item"
+              @click.native="search_index = index"
+              >{{ item }}</el-dropdown-item
+            >
+          </el-dropdown-menu>
+        </el-dropdown> -->
+        <el-input
+          style="width:200px;position:relative"
+          placeholder="请输入搜索内容~~~"
+          clearable
+          v-model="search_value"
+          @keyup.enter.native="handleSearch"
+        >
+        </el-input>
+        <el-button @click="handleSearch"
+          ><i class="el-icon-search"></i
+        ></el-button>
+      </div>
     </div>
+
     <div class="news-container">
       <template>
         <!-- 表格 -->
@@ -46,6 +87,9 @@
 
           <!-- <el-table-column prop="remark" label="描述"> </el-table-column> -->
           <el-table-column prop="createPerson" label="创建者" width="100">
+            <template v-slot:default="props">
+              <span>{{ hiddenCreatePerson(props.row.createPerson) }}</span>
+            </template>
           </el-table-column>
           <el-table-column prop="createAtTime" label="创建时间" width="150">
             <template v-slot:default="props">
@@ -108,7 +152,11 @@
       <div style="text-align:center">
         <span style="color:grey;font-size:10px;">常用链接</span>
       </div>
-      <div class="side-button side-btn2" v-for="item in outerLinks">
+      <div
+        class="side-button side-btn2"
+        v-for="item in outerLinks"
+        :key="item.title"
+      >
         <a :href="item.href" target="_blank">{{ item.title }}</a>
       </div>
     </div>
@@ -141,6 +189,10 @@ export default {
       isAdding: false,
       isEditing: false,
       oldJobinfo: null,
+      search_value: "",
+      search_index: 0,
+      search_cases: ["默认搜索", "按主题搜", "按地点搜", "按作者搜"],
+      search_originData: null,
       outerLinks: [
         {
           title: "牛客网",
@@ -162,6 +214,7 @@ export default {
         //   link: "http://www.baidu.com",
         //   remark: "说明222",
         //   createAtTime: "2022-07-11"
+        //   createPerson:"",
         // }
       ]
     };
@@ -191,6 +244,51 @@ export default {
   },
   methods: {
     ...mapMutations({ setAuthor: "setAuthor" }),
+
+    // 隐藏部分名称
+    hiddenCreatePerson(fullName) {
+      const arr = fullName.split("");
+      if (fullName === "张三") return "张三";
+      if (arr.length === 2) return `${arr[0]}*`;
+      if (arr.length === 3) return `${arr[0]}*${arr[2]}`;
+    },
+    // 按条件搜索
+    handleSearch() {
+      const flag =
+        this.search_originData &&
+        this.search_originData.length > this.lists.length;
+
+      if (!this.search_value && flag) {
+        this.lists = JSON.parse(JSON.stringify(this.search_originData));
+        this.search_index = 0; //恢复为默认搜索选项
+        return;
+      }
+      if (flag) {
+        this.lists = JSON.parse(JSON.stringify(this.search_originData));
+      }
+
+      let searchResults = new Array();
+      const attrName = ["default", "theme", "position", "createPerson"][
+        this.search_index
+      ]; //查询属性名
+      if (attrName === "default") {
+        searchResults = this.lists.filter(item => {
+          for (let att in item) {
+            if (att === "uuid") continue;
+            if (String(item[att]).indexOf(this.search_value) > -1) return true;
+          }
+        });
+      } else {
+        searchResults = this.lists.filter(item => {
+          return String(item[attrName]).indexOf(this.search_value) > -1; //这个地方要转为字符串，因为null的情况是object类型
+        });
+      }
+
+      if (!this.search_originData) {
+        this.search_originData = JSON.parse(JSON.stringify(this.lists)); //把原始数据储存起来
+      }
+      this.lists = JSON.parse(JSON.stringify(searchResults));
+    },
 
     // 添加用户接口
     test() {
@@ -323,11 +421,27 @@ export default {
 };
 </script>
 <style scoped>
+.search-row {
+  width: 88%;
+  margin: 0 auto;
+  padding: 5px;
+  padding-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.el-select .el-input {
+  width: 130px;
+}
+.input-with-select .el-input-group__prepend {
+  background-color: #fff;
+}
+
 .news-container {
   /* background: orange; */
   width: 88%;
   margin: 0 auto;
-  padding-top: 20px;
+  padding-top: 10px;
 }
 a,
 ul,
