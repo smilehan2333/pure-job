@@ -136,6 +136,14 @@
       </template>
     </div>
 
+    <!-- 底部备案号 -->
+    <div id="beian">
+      <img src="static/police.png" />
+      <a href="https://beian.miit.gov.cn/#/Integrated/index" target="_blank">
+        备案号：蜀ICP备2021021360号-3</a
+      >
+    </div>
+
     <div class="sider">
       <!-- 添加按钮 -->
       <div
@@ -497,5 +505,19 @@ li {
   font: 700 16px "宋体";
   line-height: 20px;
   padding: 10px;
+}
+
+#beian {
+  height: 20px;
+  padding: 10px;
+  /* flex布局水平垂直居中 */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  /* 字体样式 */
+  font: 100 5px "微软雅黑";
+  color: white;
+  line-height: 20px;
 }
 </style>
