@@ -2,7 +2,7 @@
   <div>
     <!-- 提示+搜索行 -->
     <div class="search-row">
-      <span style="color:grey;font-size:10px;"
+      <span style="color:grey;font-size:10px;user-select:none;"
         >请在登录后尽情添加修改，可以顺便把看到的地点信息完善一下~~~</span
       >
       <div>
@@ -36,6 +36,7 @@
           style="width:200px;position:relative"
           placeholder="请输入搜索内容~~~"
           clearable
+          v-on:clear="handleSearch"
           v-model="search_value"
           @keyup.enter.native="handleSearch"
         >
@@ -158,7 +159,9 @@
         测试
       </div> -->
       <div style="text-align:center">
-        <span style="color:grey;font-size:10px;">常用链接</span>
+        <span style="color:grey;font-size:10px;user-select: none;"
+          >常用链接</span
+        >
       </div>
       <div
         class="side-button side-btn2"
@@ -497,6 +500,7 @@ li {
   background-color: rgb(64, 158, 255);
 
   margin-bottom: 50px;
+  user-select: none;
 }
 .side-btn2 {
   /* background-color: rgb(64, 158, 255); */
@@ -519,5 +523,7 @@ li {
   font: 100 5px "微软雅黑";
   color: white;
   line-height: 20px;
+
+  user-select: none;
 }
 </style>

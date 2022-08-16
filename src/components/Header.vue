@@ -8,7 +8,7 @@
       background-color="#2274A5"
       text-color="#fff"
       active-text-color="#F1C40F"
-      style="display:flex;flex-direction:row;justify-content: center;text-align:center;"
+      style="display:flex;flex-direction:row;justify-content: center;text-align:center;user-select:none;"
     >
       <el-menu-item index="/records" title="个人记录将会保存在本地"
         >个人记录</el-menu-item
